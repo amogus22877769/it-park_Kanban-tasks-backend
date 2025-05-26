@@ -2,7 +2,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, ForeignKey, ForeignKeyConstraint
 from typing import List
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+# from flask_marshmallow import Marshmallow
 
 class Base(DeclarativeBase):
   pass
