@@ -19,12 +19,16 @@ class Board(db.Model):
     user_id: Mapped[str] = mapped_column(ForeignKey('user.id'), primary_key=True)
     tasks: Mapped[List['Task']] = relationship(cascade="all, delete-orphan")
 
-    def as_json(self):
+    def as_json(self, without_tasks=False):
         return {
             'id': self.id,
             'name': self.name,
             'user_id': self.user_id,
             'tasks': [task.as_json() for task in self.tasks]
+        } if not without_tasks else {
+            'id': self.id,
+            'name': self.name,
+            'user_id': self.user_id,
         }
 
 class Task(db.Model):

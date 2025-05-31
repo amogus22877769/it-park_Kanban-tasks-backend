@@ -65,30 +65,82 @@ def handle_boards():
                         type: string
                     user_id:
                         type: string
-                    tasks:
-                        type: array
-                        items:
-                            type: object
-                            properties:
-                                id:
-                                    type: string
-                                title:
-                                    type: string
-                                description:
-                                    type: string
-                                status:
-                                    type: string
-                                board_id:
-                                    type: integer
-                                board_user_id:
-                                    type: string
-                                    description: id
+                    # tasks:
+                    #     type: array
+                    #     items:
+                    #         type: object
+                    #         properties:
+                    #             id:
+                    #                 type: string
+                    #             title:
+                    #                 type: string
+                    #             description:
+                    #                 type: string
+                    #             status:
+                    #                 type: string
+                    #             board_id:
+                    #                 type: integer
+                    #             board_user_id:
+                    #                 type: string
+                    #                 description: id
       401:
         description: Неправильный токен
     """
     user = require_authorization()
-    return [board.as_json() for board in user.boards]
+    return [board.as_json(without_tasks=True) for board in user.boards]
 
+@app.get('/api/boards/<int:board_id>')
+def handle_board(board_id):
+    """Получить доску с задачами
+    ---
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        default: Bearer
+      - name: board_id
+        in: path
+        type: integer
+        required: true
+    responses:
+      200:
+        description: Доска с задачами
+        schema:
+            type: object
+            properties:
+                id:
+                    type: integer
+                name:
+                    type: string
+                user_id:
+                    type: string
+                tasks:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            id:
+                                type: string
+                            title:
+                                type: string
+                            description:
+                                type: string
+                            status:
+                                type: string
+                            board_id:
+                                type: integer
+                            board_user_id:
+                                type: string
+                                description: id
+      401:
+        description: Неправильный токен
+      404:
+        description: Доски не существует
+    """
+    user = require_authorization()
+    board = db.get_or_404(Board, {'id': board_id, 'user_id': user.id})
+    return board.as_json()
 
 @app.post('/api/boards/create')
 def handle_create_board():
